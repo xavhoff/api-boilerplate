@@ -3,7 +3,7 @@ import passport from "passport";
 import { UserController } from "../controllers";
 import { HasRole, Role } from "../auth";
 
-export default function getUserRoutes(userController: UserController) {
+export default function getUsersRoutes(userController: UserController) {
   const router = Router();
 
   router.get(

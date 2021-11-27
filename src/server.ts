@@ -2,6 +2,8 @@ import { Logger } from "winston";
 import express, { Request, Response, NextFunction } from "express";
 import http from "http";
 import passport from "passport";
+import { UserController } from "./controllers";
+import { getUsersRoutes } from "./routes";
 
 interface ErrorMessage extends Error {
   status?: number;
@@ -16,13 +18,19 @@ export default class Server {
 
   logger: Logger;
 
+  userController: UserController;
+
   constructor(logger: Logger) {
-    this.server = this.run();
     this.logger = logger;
+
+    this.userController = new UserController(this.logger);
+
+    this.server = this.run();
   }
 
   public run(): http.Server {
     this.app.use(passport.initialize());
+    this.app.use("/users", getUsersRoutes(this.userController));
 
     // catch 404 and forward to error handler
     this.app.use((req, res, next) => {
