@@ -1,6 +1,7 @@
 import { Logger } from "winston";
 import express, { Request, Response, NextFunction } from "express";
 import http from "http";
+import cors from "cors";
 import passport from "passport";
 import { UserController } from "./controllers";
 import { getUsersRoutes } from "./routes";
@@ -22,6 +23,8 @@ export default class Server {
 
   constructor(logger: Logger) {
     this.logger = logger;
+
+    this.loadGlobalMiddleware();
 
     this.userController = new UserController(this.logger);
 
@@ -56,5 +59,20 @@ export default class Server {
     return this.app.listen(this.port, () => {
       this.logger.info(`API  up and running on port ${this.port}`);
     });
+  }
+
+  /**
+   * Load middleware into the express server (cors, body-parser,...)
+   */
+  private loadGlobalMiddleware(): void {
+    this.app.use(
+      express.urlencoded({
+        extended: true,
+        limit: "10mb",
+      })
+    );
+    this.app.use(express.json());
+
+    this.app.use(cors());
   }
 }
